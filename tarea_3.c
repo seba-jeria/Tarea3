@@ -47,7 +47,7 @@ int lower_than_int(void*,void*);
 bool estaRepetido(HashMap *, Videojuego *);
 void agregarVideojuego(TreeMap *, void *clave, Videojuego *);
 void mostrar(TreeMap *mapa, Pair *pair, Pair *(avanzar)(TreeMap *mapa));
-void mostrarJuegosAno(TreeMap *mapaValoraciones, int ano, int max);
+void mostrarJuegosAnio(TreeMap *mapaValoraciones, int anio, int max);
 int obtenerAno(char *fecha);
 
 int main(){
@@ -57,7 +57,7 @@ int main(){
     Videojuego* videogame = (Videojuego*)malloc(sizeof(Videojuego));
     TreeMap* precio = createTreeMap(lower_than_int);
     TreeMap* valoracion = createTreeMap(lower_than_int);
-    HashMap* mapaNombres = createMap(50);
+    HashMap* mapaNombres = createMap(55);
 
     menu();
     scanf("%d",&num);
@@ -106,6 +106,40 @@ int main(){
                 break;
             }
             case 2:{
+                char ing_nombre[30];
+                char ing_fecha[30];
+                int ing_valoracion;
+                int ing_precio;
+
+                Videojuego* videogame = (Videojuego*)malloc(sizeof(Videojuego));
+                
+                printf("Ingrese nombre: ");
+                fflush(stdin);
+                scanf("%[^\n]", ing_nombre);
+
+                printf("Ingrese fecha: ");
+                fflush(stdin);
+                scanf("%[^\n]", ing_fecha);
+
+                printf("Ingrese valoracion: ");
+                fflush(stdin);
+                scanf("%d", &ing_valoracion);
+
+                printf("Ingrese precio: ");
+                fflush(stdin);
+                scanf("%d", &ing_precio);
+
+                strcpy(videogame->nombre, ing_nombre);
+                strcpy(videogame->fecha, ing_fecha); 
+                videogame->valoracion = ing_valoracion;
+                videogame->precio = ing_precio;
+
+                if (!estaRepetido(mapaNombres, videogame)){
+                    insertMap(mapaNombres, videogame->nombre, videogame);
+                    agregarVideojuego(precio, &(videogame->precio), videogame);
+                    agregarVideojuego(valoracion, &(videogame->valoracion), videogame);
+                }
+
                 break;
             }
             case 3:{
@@ -135,13 +169,14 @@ int main(){
                 break;
             }
             case 5:{
-                int ano;
-                printf("Introduzca año: ");
-                scanf("%d",&ano);
-                mostrarJuegosAno(valoracion, ano, 5);
+                int anio;
+                printf("Introduzca anio: ");
+                scanf("%d",&anio);
+                mostrarJuegosAnio(valoracion, anio, 5);
                 break;
             }
             case 6:{
+                
                 break;
             }
             case 7:{
@@ -227,18 +262,18 @@ void mostrar(TreeMap *mapa, Pair *primero, Pair* (avanzar)(TreeMap *mapa)) {
     }
 }
 
-int obtenerAno(char* fecha) {
+int obtenerAnio(char* fecha) {
     return atoi(fecha + 6);
 }
 
-void mostrarJuegosAno(TreeMap *mapaValoraciones, int ano, int max) {
+void mostrarJuegosAnio(TreeMap *mapaValoraciones, int anio, int max) {
     Pair *pair = lastTreeMap(mapaValoraciones);
     int cont = 0;
     while(pair) {
         List *listaValoracion = pair->value;
         Videojuego *videojuego = firstList(listaValoracion);
         while(videojuego) {
-            if(obtenerAno(videojuego->fecha) == ano) {
+            if(obtenerAnio(videojuego->fecha) == anio) {
                 printf("%s / %s / %d / %d\n", videojuego->nombre, videojuego->fecha, videojuego->valoracion, videojuego->precio);
                 cont++;
             }
