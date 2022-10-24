@@ -49,6 +49,7 @@ void agregarVideojuego(TreeMap *, void *clave, Videojuego *);
 void mostrar(TreeMap *mapa, Pair *pair, Pair *(avanzar)(TreeMap *mapa));
 void mostrarJuegosAnio(TreeMap *mapaValoraciones, int anio, int max);
 int obtenerAno(char *fecha);
+Videojuego* introducirdatos();
 
 int main(){
     int num;
@@ -106,33 +107,9 @@ int main(){
                 break;
             }
             case 2:{
-                char ing_nombre[30];
-                char ing_fecha[30];
-                int ing_valoracion;
-                int ing_precio;
-
                 Videojuego* videogame = (Videojuego*)malloc(sizeof(Videojuego));
-                
-                printf("Ingrese nombre: ");
-                fflush(stdin);
-                scanf("%[^\n]", ing_nombre);
 
-                printf("Ingrese fecha: ");
-                fflush(stdin);
-                scanf("%[^\n]", ing_fecha);
-
-                printf("Ingrese valoracion: ");
-                fflush(stdin);
-                scanf("%d", &ing_valoracion);
-
-                printf("Ingrese precio: ");
-                fflush(stdin);
-                scanf("%d", &ing_precio);
-
-                strcpy(videogame->nombre, ing_nombre);
-                strcpy(videogame->fecha, ing_fecha); 
-                videogame->valoracion = ing_valoracion;
-                videogame->precio = ing_precio;
+                videogame = introducirdatos();
 
                 if (!estaRepetido(mapaNombres, videogame)){
                     insertMap(mapaNombres, videogame->nombre, videogame);
@@ -176,20 +153,23 @@ int main(){
                 break;
             }
             case 6:{
-                
                 break;
             }
             case 7:{
                 char nombre_archivo2[30];
                 strcpy(nombre_archivo2, "vj2.csv");
                 FILE *fp = fopen (nombre_archivo2, "w");
-                fprintf(fp,"Nombre,Fecha,Valoracion,Precio\n");
-                Pair* aux = firstTreeMap(precio);
-                Videojuego* aux2 = aux->value;
-                while(aux!=NULL){
-                    aux2 = aux->value;
-                    fprintf(fp,"%s,%s,%d,%d\n",aux2->nombre, aux2->fecha, aux2->valoracion, aux2->precio);
-                    aux = nextTreeMap(precio);
+                fprintf(fp,"Nombre,año de salida,valoracion,precio\n");
+                Pair *pair = firstTreeMap(precio);
+                while(pair) {
+                    List *lista = pair->value;
+                    Videojuego *videojuego = firstList(lista);
+                    while(videojuego) {
+                        fprintf(fp,"%s,%s,%d,%d\n",videojuego->nombre, videojuego->fecha, videojuego->valoracion, videojuego->precio);
+                        videojuego = nextList(lista);
+                    }
+                    pair = nextTreeMap(precio);
+                
                 }
                 fclose(fp);
                 break;
@@ -282,4 +262,36 @@ void mostrarJuegosAnio(TreeMap *mapaValoraciones, int anio, int max) {
         }
         pair = prevTreeMap(mapaValoraciones);
     }
+}
+
+Videojuego* introducirdatos(){
+    char ing_nombre[30];
+    char ing_fecha[30];
+    int ing_valoracion;
+    int ing_precio;
+
+    Videojuego* videogame = (Videojuego*)malloc(sizeof(Videojuego));
+                
+    printf("Ingrese nombre: ");
+    fflush(stdin);
+    scanf("%[^\n]", ing_nombre);
+
+    printf("Ingrese fecha: ");
+    fflush(stdin);
+    scanf("%[^\n]", ing_fecha);
+
+    printf("Ingrese valoracion: ");
+    fflush(stdin);
+    scanf("%d", &ing_valoracion);
+
+    printf("Ingrese precio: ");
+    fflush(stdin);
+    scanf("%d", &ing_precio);
+
+    strcpy(videogame->nombre, ing_nombre);
+    strcpy(videogame->fecha, ing_fecha); 
+    videogame->valoracion = ing_valoracion;
+    videogame->precio = ing_precio;
+
+    return videogame;
 }
