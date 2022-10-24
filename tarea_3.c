@@ -5,8 +5,8 @@
 #include "hashmap.h"
 #include "list.h"
 #include "treemap.h"
-
-typedef struct {
+//acceso de las librerias
+typedef struct { // se define la estructura que se usaran en los videojuegos
     char nombre[30];
     char fecha[30];
     int valoracion;
@@ -42,6 +42,8 @@ char *get_csv_field(char *linea, int indice){
     }
     return NULL;
 }
+
+//son los prototipos de las funciones que se utilizaran
 void menu();
 int lower_than_int(void*,void*);
 bool estaRepetido(HashMap *, Videojuego *);
@@ -51,7 +53,7 @@ void mostrarJuegosAnio(TreeMap *mapaValoraciones, int anio, int max);
 int obtenerAno(char *fecha);
 Videojuego* introducirdatos();
 
-int main(){
+int main(){ // nuestra funcion principal (main)
     int num;
     bool flag = true;
     char nombre_archivo[30];
@@ -62,18 +64,22 @@ int main(){
 
     menu();
     scanf("%d",&num);
+    
+    // INICIO DE los comandos
     while(num<0||num>7){
         printf("Introdusca un numero valido: ");
         scanf("%d", &num);
     }
     while (flag){
         switch (num){
-            case 0:{
+            
+            case 0:{ //al ingresar un numero cero se da por finalizado el programa
                 printf("Programa finalizado");
                 flag=false;
                 break;
             }
-	        case 1:{
+	        
+            case 1:{ //opcion 1 importar archivos
                 printf("Ingrese el nombre del arhivo: ");
                 fflush(stdin);
                 scanf("%29[^\n]s", nombre_archivo);
@@ -93,7 +99,7 @@ int main(){
                     videogame->valoracion = atoi(get_csv_field(linea, 2));
                     videogame->precio = atoi(get_csv_field(linea, 3));
                     
-                    if (!estaRepetido(mapaNombres, videogame)) {
+                    if (!estaRepetido(mapaNombres, videogame)) { // aca nos aseguramos que NO este repetido
                         insertMap(mapaNombres, videogame->nombre, videogame);
                         agregarVideojuego(precio, &(videogame->precio), videogame);
                         agregarVideojuego(valoracion, &(videogame->valoracion), videogame);
@@ -106,12 +112,12 @@ int main(){
                 }
                 break;
             }
-            case 2:{
+            case 2:{ // opcion 2 agregar un juego
                 Videojuego* videogame = (Videojuego*)malloc(sizeof(Videojuego));
 
                 videogame = introducirdatos();
 
-                if (!estaRepetido(mapaNombres, videogame)){
+                if (!estaRepetido(mapaNombres, videogame)){ //para que NO este repetido
                     insertMap(mapaNombres, videogame->nombre, videogame);
                     agregarVideojuego(precio, &(videogame->precio), videogame);
                     agregarVideojuego(valoracion, &(videogame->valoracion), videogame);
@@ -119,40 +125,41 @@ int main(){
 
                 break;
             }
-            case 3:{
+            case 3:{ // opcion 3 mostrar juegos por precio
                 int opcion;
                 printf("1.Mayor a Menor\n");
                 printf("2.Menor a Mayor\n");
                 printf("Introduzca opcion: ");
                 scanf("%d",&opcion);
-                  while(opcion<1||opcion>2){
+                  while(opcion<1||opcion>2){ 
                     printf("Introduzca una opcion valida: ");
                     scanf("%d", &opcion);
                 }
                 printf("\n");
-                if(opcion == 1) {
+                if(opcion == 1) { // Menor a Mayor
                     mostrar(precio, lastTreeMap(precio), prevTreeMap);
-                }
-                else {
+                } // se empieza por el ultimo del arbol el menor y con prev se subira hasta llegar al first
+                else { //opcion 2 Mayor a Menor
                     mostrar(precio, firstTreeMap(precio), nextTreeMap);
-                }
+                }// se empieza por el first que es el mayor y se usara next para llegar al ultimo osea el menor
                 break;
             }
-            case 4:{
+            case 4:{ // opcion 4 filtrar juegos por valoracion
                 int valor;
                 printf("Introduzca valoracion: ");
                 scanf("%d",&valor);
                 mostrar(valoracion, upperBound(valoracion, &valor), nextTreeMap);
                 break;
             }
-            case 5:{
+            case 5:{ // opcion 5 mostrar juegos del anio
                 int anio;
                 printf("Introduzca anio: ");
                 scanf("%d",&anio);
-                mostrarJuegosAnio(valoracion, anio, 5);
+                mostrarJuegosAnio(valoracion, anio, 5); // ese 5 es porque se mostrara los cinco mejores juegos
                 break;
             }
-            case 6:{
+            case 6:{ // opcion 6 Buscar juego
+                //definir variables
                 char ing_nombre[30];
                 int opcion;
                 Pair_map* pair = (Pair_map*)malloc(sizeof(Pair_map));
@@ -179,7 +186,7 @@ int main(){
                         printf("Introduzca una opcion valida: ");
                         scanf("%d", &opcion);
                     }
-                    if (opcion == 1){  
+                    if (opcion == 1){  // si se escoge la primera opcion para modificar el videojuego
                         Videojuego* actualizado = (Videojuego*)malloc(sizeof(Videojuego));
 
                         actualizado = introducirdatos();
@@ -211,7 +218,7 @@ int main(){
                         }
                         break;
                     }
-                    else{
+                    else{ //  es la opcion 2 donde se eliminara el videojuego
                         eraseMap(mapaNombres, ing_nombre);
 
                         pair_treev = searchTreeMap(valoracion, &original->valoracion);
@@ -235,7 +242,7 @@ int main(){
                     }
                 }
             }
-            case 7:{
+            case 7:{ // opcion 7 exportar datos
                 char nombre_archivo2[30];
                 strcpy(nombre_archivo2, "vj2.csv");
                 FILE *fp = fopen (nombre_archivo2, "w");
@@ -269,7 +276,7 @@ int main(){
 return 0;
 }
 
-void menu(){
+void menu(){ //funcion para poder mostrar el menu por pantalla
     printf("1. Importar archivo CSV\n");
     printf("2. Agregar Juego\n");
     printf("3. Mostrar Juegos por precio\n");
@@ -287,13 +294,13 @@ int lower_than_int(void* key1, void* key2){
     return k1<k2;
 }
 
-bool estaRepetido(HashMap *mapaNombres, Videojuego *videojuego) {
+bool estaRepetido(HashMap *mapaNombres, Videojuego *videojuego) { // funcion para comprobar nombres repetidos
     Pair_map *pair = searchMap(mapaNombres, videojuego->nombre);
     if(pair) return true;
     return false;
 }
 
-void agregarVideojuego(TreeMap *mapa, void *clave, Videojuego *videojuego) {
+void agregarVideojuego(TreeMap *mapa, void *clave, Videojuego *videojuego) { //funcion para agregar videojuegos
     Pair *pair = searchTreeMap(mapa, clave);
     List *listaVideojuegos = NULL;
 
@@ -322,11 +329,11 @@ void mostrar(TreeMap *mapa, Pair *primero, Pair* (avanzar)(TreeMap *mapa)) {
     }
 }
 
-int obtenerAnio(char* fecha) {
+int obtenerAnio(char* fecha) { // funcion para poder sacar el anio en el formato dd/mm/aaaa
     return atoi(fecha + 6);
 }
 
-void mostrarJuegosAnio(TreeMap *mapaValoraciones, int anio, int max) {
+void mostrarJuegosAnio(TreeMap *mapaValoraciones, int anio, int max) { // funcion capaz de imprimir los 5 mejores videojuegos
     Pair *pair = lastTreeMap(mapaValoraciones);
     int cont = 0;
     while(pair) {
@@ -344,7 +351,7 @@ void mostrarJuegosAnio(TreeMap *mapaValoraciones, int anio, int max) {
     }
 }
 
-Videojuego* introducirdatos(){
+Videojuego* introducirdatos(){ //funcion para introducir/definir la estructura de datos e ingresar sus datos correspondientes
     char ing_nombre[30];
     char ing_fecha[30];
     int ing_valoracion;
