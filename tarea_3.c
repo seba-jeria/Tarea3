@@ -153,7 +153,87 @@ int main(){
                 break;
             }
             case 6:{
-                break;
+                char ing_nombre[30];
+                int opcion;
+                Pair_map* pair = (Pair_map*)malloc(sizeof(Pair_map));
+                Pair* pair_treev = (Pair*)malloc(sizeof(Pair));
+                Pair* pair_treep = (Pair*)malloc(sizeof(Pair));
+                Videojuego* aux = (Videojuego*)malloc(sizeof(Videojuego));
+                Videojuego* aux2 = (Videojuego*)malloc(sizeof(Videojuego));
+
+                printf("Ingrese nombre del juego: ");
+                fflush(stdin);
+                scanf("%[^\n]", ing_nombre);
+                pair = searchMap(mapaNombres, ing_nombre);
+                if (pair == NULL){
+                    printf("Juego no encontrado");
+                    break;
+                }
+                else{
+                    Videojuego* original = pair->value;
+                    printf("%s / %s / %d / %d\n", original->nombre, original->fecha, original->valoracion, original->precio);
+                    printf("Ingrese 1) para odificar o 2) para eliminar: ");
+                    fflush(stdin);
+                    scanf("%d", &opcion);
+                    while(opcion<1||opcion>2){
+                        printf("Introduzca una opcion valida: ");
+                        scanf("%d", &opcion);
+                    }
+                    if (opcion == 1){  
+                        Videojuego* actualizado = (Videojuego*)malloc(sizeof(Videojuego));
+
+                        actualizado = introducirdatos();
+
+                        eraseMap(mapaNombres, ing_nombre);
+
+                        pair_treev = searchTreeMap(valoracion, &original->valoracion);
+                        aux = firstList(pair_treev->value);
+                        while(aux != NULL){
+                             if(strcmp(aux->nombre, original->nombre) == 0){
+                                popCurrent(pair_treev->value);
+                             }
+                             aux = nextList(pair_treev->value);
+                        }
+
+                        pair_treep = searchTreeMap(precio, &original->precio);
+                        aux2 = firstList(pair_treep->value);
+                        while(aux2 != NULL){
+                             if(strcmp(aux2->nombre, original->nombre) == 0){
+                                popCurrent(pair_treep->value);
+                             }
+                             aux2 = nextList(pair_treep->value);
+                        }
+                        
+                        if (!estaRepetido(mapaNombres, actualizado)){
+                            insertMap(mapaNombres, actualizado->nombre, actualizado);
+                            agregarVideojuego(precio, &(actualizado->precio), actualizado);
+                            agregarVideojuego(valoracion, &(actualizado->valoracion), actualizado);
+                        }
+                        break;
+                    }
+                    else{
+                        eraseMap(mapaNombres, ing_nombre);
+
+                        pair_treev = searchTreeMap(valoracion, &original->valoracion);
+                        aux = firstList(pair_treev->value);
+                        while(aux != NULL){
+                             if(strcmp(aux->nombre, original->nombre) == 0){
+                                popCurrent(pair_treev->value);
+                             }
+                             aux = nextList(pair_treev->value);
+                        }
+
+                        pair_treep = searchTreeMap(precio, &original->precio);
+                        aux2 = firstList(pair_treep->value);
+                        while(aux2 != NULL){
+                             if(strcmp(aux2->nombre, original->nombre) == 0){
+                                popCurrent(pair_treep->value);
+                             }
+                             aux2 = nextList(pair_treep->value);
+                        }
+                        break;
+                    }
+                }
             }
             case 7:{
                 char nombre_archivo2[30];
